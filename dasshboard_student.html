@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; min-height: 100vh; }
+        .topbar { background: white; padding: 16px 24px; border-bottom: 1px solid #e2e8f0; }
+        .topbar-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .brand { text-decoration: none; font-weight: 700; font-size: 1.2rem; color: #1e293b; }
+        .brand span { margin-right: 8px; }
+        .btn { display: inline-block; padding: 8px 20px; background: #4f46e5; color: white; text-decoration: none; border-radius: 6px; border: none; cursor: pointer; font-size: 0.9rem; }
+        .btn-success { background: #22c55e; }
+        .btn-danger { background: #ef4444; }
+        .btn-warning { background: #eab308; color: #1e293b; }
+        .btn-sm { padding: 6px 14px; font-size: 0.85rem; }
+        .btn-full { width: 100%; padding: 12px; font-size: 1rem; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        .layout { display: flex; gap: 24px; }
+        .sidebar { background: white; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; width: 220px; min-height: 400px; }
+        .sidebar ul { list-style: none; padding: 0; margin: 0; }
+        .sidebar ul li { padding: 10px 12px; margin: 4px 0; border-radius: 6px; cursor: pointer; }
+        .sidebar ul li:hover { background: #f1f5f9; }
+        .sidebar ul li.active { background: #4f46e5; color: white; }
+        .sidebar ul li a { text-decoration: none; color: inherit; display: block; }
+        .main-content { flex: 1; }
+        .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .user-info { background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .stat .num { font-size: 2rem; font-weight: 700; color: #4f46e5; }
+        .stat .label { color: #64748b; font-size: 0.9rem; }
+        .text-muted { color: #64748b; }
+        .footer { text-align: center; padding: 24px; color: #94a3b8; border-top: 1px solid #e2e8f0; margin-top: 40px; }
+        .user-name { color: #4f46e5; font-weight: 600; margin-right: 16px; }
+        .nav { display: flex; gap: 12px; align-items: center; }
+        .alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; display: none; align-items: center; gap: 8px; }
+        .alert-success { background: #dcfce7; color: #166534; border: 1px solid #86efac; display: flex; }
+        .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; display: flex; }
+        .alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; display: flex; }
+        .alert-info { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; display: flex; }
+        .application-card { border-left: 4px solid #4f46e5; padding-left: 16px; }
+        .application-card.pending { border-left-color: #eab308; }
+        .application-card.cleared { border-left-color: #22c55e; }
+        .application-card.rejected { border-left-color: #ef4444; }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: inline-block; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-cleared { background: #dcfce7; color: #166534; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+        .status-in_progress { background: #dbeafe; color: #1e40af; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 12px; padding: 32px; max-width: 560px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b; }
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; color: #1e293b; }
+        .field input, .field select, .field textarea { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 1rem; }
+        .field textarea { min-height: 80px; resize: vertical; }
+        .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+        .flex { display: flex; gap: 12px; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .mt-16 { margin-top: 16px; }
+        .mb-16 { margin-bottom: 16px; }
+        .gap-8 { gap: 8px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="topbar-inner">
+            <a href="index.html" class="brand"><span>🎓</span> School Clearance Portal</a>
+            <div class="nav">
+                <span class="user-name" data-user-display>👋 User</span>
+                <button class="btn btn-danger btn-sm" onclick="logoutUser()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="layout">
+            <div class="sidebar">
+                <ul>
+                    <li class="active" onclick="showSection('dashboard')"><a href="#dashboard">📊 Dashboard</a></li>
+                    <li onclick="showSection('applications')"><a href="#applications">📝 Applications</a></li>
+                    <li onclick="showSection('documents')"><a href="#documents">📄 Documents</a></li>
+                    <li onclick="showSection('notifications')"><a href="#notifications">🔔 Notifications</a></li>
+                    <li><a href="#" onclick="logoutUser()">🚪 Logout</a></li>
+                </ul>
+            </div>
+
+            <div class="main-content">
+                <div id="alert-box" class="alert"></div>
+
+                <!-- ==================== DASHBOARD SECTION ==================== -->
+                <div id="section-dashboard">
+                    <div class="user-info">
+                        <h3>👋 Welcome, <span data-user-name>Student</span></h3>
+                        <p style="margin-top: 8px; color: #64748b;">
+                            <strong>Email:</strong> <span data-user-email>—</span> &nbsp;|&nbsp; 
+                            <strong>Role:</strong> <span data-user-role>Student</span>
+                        </p>
+                    </div>
+
+                    <div class="grid-4">
+                        <div class="card stat"><div class="num" id="stat-obligations">0</div><div class="label">Obligations</div></div>
+                        <div class="card stat"><div class="num" id="stat-applications">0</div><div class="label">Applications</div></div>
+                        <div class="card stat"><div class="num" id="stat-documents">0</div><div class="label">Documents</div></div>
+                        <div class="card stat"><div class="num" id="stat-notifications">0</div><div class="label">Notifications</div></div>
+                    </div>
+
+                    <div class="card" id="clearance-status-card">
+                        <div class="flex-between">
+                            <h2>Clearance Status</h2>
+                            <span id="clearance-status-badge" class="status-badge status-pending">No Application</span>
+                        </div>
+                        <div id="clearance-content">
+                            <p class="text-muted">You have no active clearance application.</p>
+                            <button class="btn btn-success" style="margin-top: 12px;" onclick="openApplicationModal()">📝 Apply for Clearance</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== APPLICATIONS SECTION ==================== -->
+                <div id="section-applications" style="display: none;">
+                    <div class="flex-between mb-16">
+                        <h1>My Clearance Applications</h1>
+                        <button class="btn btn-success" onclick="openApplicationModal()">+ New Application</button>
+                    </div>
+                    <div id="applications-list">
+                        <div class="card text-muted center" style="padding: 40px;">No applications found. Click "New Application" to start.</div>
+                    </div>
+                </div>
+
+                <!-- ==================== DOCUMENTS SECTION ==================== -->
+                <div id="section-documents" style="display: none;">
+                    <h1 class="mb-16">My Documents</h1>
+                    <div id="documents-list">
+                        <div class="card text-muted center" style="padding: 40px;">No documents uploaded yet.</div>
+                    </div>
+                </div>
+
+                <!-- ==================== NOTIFICATIONS SECTION ==================== -->
+                <div id="section-notifications" style="display: none;">
+                    <h1 class="mb-16">Notifications</h1>
+                    <div id="notifications-list">
+                        <div class="card text-muted center" style="padding: 40px;">No notifications at this time.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== APPLICATION MODAL ==================== -->
+    <div class="modal" id="application-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="app-modal-title">Apply for Clearance</h3>
+                <button class="modal-close" onclick="closeApplicationModal()">&times;</button>
+            </div>
+            <form id="application-form" onsubmit="return false;">
+                <div class="field">
+                    <label for="app-academic-year">Academic Year</label>
+                    <select id="app-academic-year" required>
+                        <option value="2025/2026">2025/2026</option>
+                        <option value="2024/2025">2024/2025</option>
+                        <option value="2023/2024">2023/2024</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="app-reason">Reason for Clearance</label>
+                    <select id="app-reason" required>
+                        <option value="Graduation">Graduation</option>
+                        <option value="Transfer">Transfer</option>
+                        <option value="Interim">Interim Clearance</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="app-notes">Additional Notes (Optional)</label>
+                    <textarea id="app-notes" placeholder="Any additional information..."></textarea>
+                </div>
+                <div class="field">
+                    <label for="app-document">Supporting Document (Optional)</label>
+                    <input type="file" id="app-document" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx">
+                </div>
+                <button type="button" class="btn btn-success btn-full" onclick="submitApplication()">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="footer">&copy; 2026 School Clearance Portal. All rights reserved.</div>
+
+    <!-- ==================== SCRIPTS ==================== -->
+    <script src="dashboard.js"></script>
+    <script>
+        // ============================================================
+        // STUDENT DASHBOARD - Complete Functionality
+        // ============================================================
+
+        let currentUser = null;
+        let studentApplications = [];
+        let applicationIdCounter = 1;
+
+        // Load saved applications from session storage
+        function loadApplications() {
+            try {
+                const saved = sessionStorage.getItem('student_applications');
+                if (saved) {
+                    studentApplications = JSON.parse(saved);
+                    applicationIdCounter = studentApplications.length + 1;
+                }
+            } catch (e) {
+                studentApplications = [];
+            }
+        }
+
+        // Save applications to session storage
+        function saveApplications() {
+            try {
+                sessionStorage.setItem('student_applications', JSON.stringify(studentApplications));
+            } catch (e) {
+                console.warn('Could not save applications');
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            currentUser = initDashboard('student');
+            if (!currentUser) return;
+
+            loadApplications();
+            updateDashboard();
+            renderApplications();
+            
+            console.log('✅ Student dashboard ready for:', currentUser.email);
+        });
+
+        // ============================================================
+        // SECTION NAVIGATION
+        // ============================================================
+
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('[id^="section-"]').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Show selected section
+            const target = document.getElementById(`section-${section}`);
+            if (target) {
+                target.style.display = 'block';
+            }
+            
+            // Update sidebar
+            document.querySelectorAll('.sidebar ul li').forEach(li => {
+                li.classList.remove('active');
+            });
+            
+            // Find and activate the clicked li
+            const clickedLi = document.querySelector(`.sidebar ul li[onclick*="'${section}'"]`);
+            if (clickedLi) {
+                clickedLi.classList.add('active');
+            }
+            
+            // Refresh content
+            if (section === 'applications') renderApplications();
+            if (section === 'documents') renderDocuments();
+            if (section === 'notifications') renderNotifications();
+        }
+
+        // ============================================================
+        // DASHBOARD UPDATE
+        // ============================================================
+
+        function updateDashboard() {
+            // Update stats
+            document.getElementById('stat-obligations').textContent = 0;
+            document.getElementById('stat-applications').textContent = studentApplications.length;
+            document.getElementById('stat-documents').textContent = 0;
+            document.getElementById('stat-notifications').textContent = 0;
+
+            // Update clearance status
+            const latestApp = studentApplications.length > 0 ? studentApplications[studentApplications.length - 1] : null;
+            const statusBadge = document.getElementById('clearance-status-badge');
+            const contentDiv = document.getElementById('clearance-content');
+
+            if (latestApp) {
+                const statusMap = {
+                    'pending': 'status-pending',
+                    'in_progress': 'status-in_progress',
+                    'cleared': 'status-cleared',
+                    'rejected': 'status-rejected'
+                };
+                statusBadge.className = `status-badge ${statusMap[latestApp.status] || 'status-pending'}`;
+                statusBadge.textContent = latestApp.status.toUpperCase();
+
+                contentDiv.innerHTML = `
+                    <div class="application-card ${latestApp.status}">
+                        <p><strong>Application #${latestApp.id}</strong></p>
+                        <p>Academic Year: ${latestApp.academic_year}</p>
+                        <p>Status: <span class="status-badge ${statusMap[latestApp.status] || 'status-pending'}">${latestApp.status.toUpperCase()}</span></p>
+                        <p class="text-muted" style="font-size:0.9rem;">Submitted: ${latestApp.submitted_at}</p>
+                        ${latestApp.status === 'pending' || latestApp.status === 'in_progress' ? 
+                            `<button class="btn btn-warning btn-sm" style="margin-top:8px;" onclick="cancelApplication(${latestApp.id})">Cancel Application</button>` : 
+                            ''}
+                        ${latestApp.status === 'cleared' ? 
+                            `<button class="btn btn-success btn-sm" style="margin-top:8px;" onclick="downloadCertificate(${latestApp.id})">📄 Download Certificate</button>` : 
+                            ''}
+                        ${latestApp.status === 'rejected' ? 
+                            `<button class="btn btn-success btn-sm" style="margin-top:8px;" onclick="openApplicationModal()">🔄 Re-apply</button>` : 
+                            ''}
+                    </div>
+                `;
+            } else {
+                statusBadge.className = 'status-badge status-pending';
+                statusBadge.textContent = 'No Application';
+                contentDiv.innerHTML = `
+                    <p class="text-muted">You have no active clearance application.</p>
+                    <button class="btn btn-success" style="margin-top: 12px;" onclick="openApplicationModal()">📝 Apply for Clearance</button>
+                `;
+            }
+        }
+
+        // ============================================================
+        // APPLICATION MANAGEMENT
+        // ============================================================
+
+        function openApplicationModal() {
+            document.getElementById('application-form').reset();
+            document.getElementById('app-modal-title').textContent = 'Apply for Clearance';
+            document.getElementById('application-modal').classList.add('active');
+        }
+
+        function closeApplicationModal() {
+            document.getElementById('application-modal').classList.remove('active');
+        }
+
+        function submitApplication() {
+            const academicYear = document.getElementById('app-academic-year').value;
+            const reason = document.getElementById('app-reason').value;
+            const notes = document.getElementById('app-notes').value;
+            const fileInput = document.getElementById('app-document');
+
+            if (!academicYear) {
+                showAlert('Please select an academic year.', 'error');
+                return;
+            }
+
+            // Create new application
+            const newApp = {
+                id: applicationIdCounter++,
+                academic_year: academicYear,
+                reason: reason,
+                notes: notes || '',
+                status: 'pending',
+                submitted_at: new Date().toLocaleString(),
+                student_name: currentUser.full_name,
+                student_email: currentUser.email,
+                document: fileInput.files.length > 0 ? fileInput.files[0].name : null
+            };
+
+            studentApplications.push(newApp);
+            saveApplications();
+
+            closeApplicationModal();
+            showAlert('✅ Your clearance application has been submitted successfully!', 'success');
+            
+            updateDashboard();
+            renderApplications();
+            
+            // Switch to applications tab
+            showSection('applications');
+        }
+
+        function cancelApplication(appId) {
+            if (!confirm('Are you sure you want to cancel this application?')) return;
+            
+            const index = studentApplications.findIndex(app => app.id === appId);
+            if (index !== -1) {
+                studentApplications[index].status = 'cancelled';
+                saveApplications();
+                showAlert('Application cancelled.', 'warning');
+                updateDashboard();
+                renderApplications();
+            }
+        }
+
+        function downloadCertificate(appId) {
+            const app = studentApplications.find(a => a.id === appId);
+            if (app) {
+                showAlert(`📄 Certificate for ${app.student_name} is being generated...`, 'success');
+                // Simulate certificate download
+                setTimeout(() => {
+                    showAlert('✅ Certificate downloaded successfully! (Demo)', 'success');
+                }, 1500);
+            }
+        }
+
+        // ============================================================
+        // RENDER FUNCTIONS
+        // ============================================================
+
+        function renderApplications() {
+            const container = document.getElementById('applications-list');
+            
+            if (studentApplications.length === 0) {
+                container.innerHTML = `<div class="card text-muted center" style="padding: 40px;">No applications found. Click "New Application" to start.</div>`;
+                return;
+            }
+
+            // Sort by date (newest first)
+            const sorted = [...studentApplications].reverse();
+
+            container.innerHTML = sorted.map(app => {
+                const statusMap = {
+                    'pending': 'status-pending',
+                    'in_progress': 'status-in_progress',
+                    'cleared': 'status-cleared',
+                    'rejected': 'status-rejected',
+                    'cancelled': 'status-rejected'
+                };
+                return `
+                    <div class="card application-card ${app.status}">
+                        <div class="flex-between">
+                            <div>
+                                <h3>Application #${app.id}</h3>
+                                <p class="text-muted" style="font-size:0.9rem;">Submitted: ${app.submitted_at}</p>
+                            </div>
+                            <span class="status-badge ${statusMap[app.status] || 'status-pending'}">${app.status.toUpperCase()}</span>
+                        </div>
+                        <div style="margin-top: 12px;">
+                            <p><strong>Academic Year:</strong> ${app.academic_year}</p>
+                            <p><strong>Reason:</strong> ${app.reason}</p>
+                            ${app.notes ? `<p><strong>Notes:</strong> ${app.notes}</p>` : ''}
+                            ${app.document ? `<p><strong>Document:</strong> 📎 ${app.document}</p>` : ''}
+                        </div>
+                        <div style="margin-top: 12px; display: flex; gap: 8px;">
+                            ${app.status === 'pending' || app.status === 'in_progress' ? 
+                                `<button class="btn btn-danger btn-sm" onclick="cancelApplication(${app.id})">Cancel</button>` : 
+                                ''}
+                            ${app.status === 'cleared' ? 
+                                `<button class="btn btn-success btn-sm" onclick="downloadCertificate(${app.id})">📄 Certificate</button>` : 
+                                ''}
+                            ${app.status === 'rejected' ? 
+                                `<button class="btn btn-success btn-sm" onclick="openApplicationModal()">🔄 Re-apply</button>` : 
+                                ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderDocuments() {
+            const container = document.getElementById('documents-list');
+            // Get documents from applications
+            const docs = studentApplications.filter(app => app.document).map(app => ({
+                name: app.document,
+                app_id: app.id,
+                uploaded_at: app.submitted_at,
+                status: app.status
+            }));
+
+            if (docs.length === 0) {
+                container.innerHTML = `<div class="card text-muted center" style="padding: 40px;">No documents uploaded yet.</div>`;
+                return;
+            }
+
+            container.innerHTML = docs.map(doc => `
+                <div class="card">
+                    <div class="flex-between">
+                        <div>
+                            <p><strong>📎 ${doc.name}</strong></p>
+                            <p class="text-muted" style="font-size:0.9rem;">Uploaded: ${doc.uploaded_at}</p>
+                            <p>Application #${doc.app_id} - Status: <span class="status-badge status-pending">${doc.status}</span></p>
+                        </div>
+                        <button class="btn btn-sm" onclick="showAlert('Document download would work with a backend', 'info')">📥 Download</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderNotifications() {
+            const container = document.getElementById('notifications-list');
+            
+            // Generate notifications from applications
+            const notifications = [];
+            studentApplications.forEach(app => {
+                notifications.push({
+                    message: `Application #${app.id} is ${app.status}`,
+                    time: app.submitted_at,
+                    type: app.status === 'cleared' ? 'success' : app.status === 'rejected' ? 'error' : 'info'
+                });
+            });
+
+            if (notifications.length === 0) {
+                container.innerHTML = `<div class="card text-muted center" style="padding: 40px;">No notifications at this time.</div>`;
+                return;
+            }
+
+            container.innerHTML = notifications.map(n => `
+                <div class="card" style="border-left: 4px solid ${n.type === 'success' ? '#22c55e' : n.type === 'error' ? '#ef4444' : '#4f46e5'};">
+                    <p>${n.message}</p>
+                    <p class="text-muted" style="font-size:0.85rem;">${n.time}</p>
+                </div>
+            `).join('');
+        }
+
+        // ============================================================
+        // ALERT SYSTEM
+        // ============================================================
+
+        function showAlert(message, type = 'info') {
+            const alertBox = document.getElementById('alert-box');
+            if (!alertBox) return;
+            
+            const icons = {
+                'success': '✅',
+                'error': '❌',
+                'warning': '⚠️',
+                'info': 'ℹ️'
+            };
+            
+            alertBox.className = `alert alert-${type}`;
+            alertBox.innerHTML = `<span>${icons[type] || 'ℹ️'}</span> ${message}`;
+            alertBox.style.display = 'flex';
+            
+            if (type === 'success' || type === 'info') {
+                setTimeout(() => {
+                    alertBox.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // ============================================================
+        // EXPOSE FUNCTIONS GLOBALLY
+        // ============================================================
+
+        window.showSection = showSection;
+        window.openApplicationModal = openApplicationModal;
+        window.closeApplicationModal = closeApplicationModal;
+        window.submitApplication = submitApplication;
+        window.cancelApplication = cancelApplication;
+        window.downloadCertificate = downloadCertificate;
+        window.showAlert = showAlert;
+        window.logoutUser = logoutUser;
+
+        console.log('✅ Student dashboard functions loaded');
+    </script>
+</body>
+</html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - School Clearance Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+        }
+        .topbar {
+            background: white;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .topbar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand {
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #1e293b;
+        }
+        .brand span {
+            margin-right: 8px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #4f46e5;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 0.85rem;
+        }
+        .btn-full {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+        .auth-wrap {
+            width: 100%;
+            max-width: 440px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 24px;
+        }
+        .field {
+            margin-bottom: 16px;
+        }
+        .field label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            color: #1e293b;
+        }
+        .field input, .field select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        .field input:focus, .field select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+            display: block;
+        }
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+            display: block;
+        }
+        .text-muted {
+            color: #64748b;
+        }
+        .center {
+            text-align: center;
+        }
+        .demo-box {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 24px;
+            border: 1px solid #e2e8f0;
+        }
+        .demo-box code {
+            background: #e2e8f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        .demo-entry {
+            padding: 6px 0;
+            cursor: pointer;
+            border-radius: 4px;
+            padding: 6px 10px;
+            transition: background 0.2s;
+        }
+        .demo-entry:hover {
+            background: #e2e8f0;
+        }
+        .footer {
+            text-align: center;
+            padding: 24px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 40px;
+        }
+        a {
+            color: #4f46e5;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .nav {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="topbar-inner">
+            <a href="index.html" class="brand">
+                <span>🎓</span> School Clearance Portal
+            </a>
+            <div class="nav">
+                <a href="register.html" class="btn btn-secondary btn-sm">Create Account</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="auth-wrap">
+            <div class="card">
+                <h2>Welcome Back</h2>
+                <p class="subtitle">Sign in to your clearance account</p>
+
+                <div id="alert-box" class="alert"></div>
+
+                <form id="login-form" onsubmit="return false;">
+                    <div class="field">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" required autofocus placeholder="e.g. name@portal.test">
+                    </div>
+                    <div class="field">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required placeholder="••••••••">
+                    </div>
+                    <button type="button" class="btn btn-full" onclick="handleLogin()">Sign In</button>
+                </form>
+
+                <p class="text-muted center" style="margin-top: 24px;">
+                    <a href="forgot_password.html">Forgot password?</a> ·
+                    <a href="register.html">Create an account</a>
+                </p>
+
+                <div class="demo-box">
+                    <strong style="display: block; margin-bottom: 8px;">🔑 Click any account to login (Password: Password123):</strong>
+                    <div class="demo-entry" onclick="fillLogin('alice@portal.test', 'Password123')">📘 <code>alice@portal.test</code> - Student</div>
+                    <div class="demo-entry" onclick="fillLogin('admin@portal.test', 'Password123')">📗 <code>admin@portal.test</code> - Administrator</div>
+                    <div class="demo-entry" onclick="fillLogin('librarian@portal.test', 'Password123')">📗 <code>librarian@portal.test</code> - Librarian</div>
+                    <div class="demo-entry" onclick="fillLogin('finance@portal.test', 'Password123')">📗 <code>finance@portal.test</code> - Finance</div>
+                    <div class="demo-entry" onclick="fillLogin('hostel@portal.test', 'Password123')">📗 <code>hostel@portal.test</code> - Hostel</div>
+                    <div class="demo-entry" onclick="fillLogin('lecturer@portal.test', 'Password123')">📗 <code>lecturer@portal.test</code> - Lecturer</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy; 2026 School Clearance Portal. All rights reserved.
+    </div>
+
+    <script>
+        // ============================================================
+        // MOCK USER DATABASE
+        // ============================================================
+        const MOCK_USERS = {
+            'alice@portal.test': { 
+                id: 1, 
+                full_name: 'Alice Johnson', 
+                email: 'alice@portal.test', 
+                role: 'student',
+                password: 'Password123'
+            },
+            'admin@portal.test': { 
+                id: 2, 
+                full_name: 'Administrator', 
+                email: 'admin@portal.test', 
+                role: 'admin',
+                password: 'Password123'
+            },
+            'librarian@portal.test': { 
+                id: 3, 
+                full_name: 'Librarian User', 
+                email: 'librarian@portal.test', 
+                role: 'librarian',
+                password: 'Password123'
+            },
+            'finance@portal.test': { 
+                id: 4, 
+                full_name: 'Finance Officer', 
+                email: 'finance@portal.test', 
+                role: 'finance',
+                password: 'Password123'
+            },
+            'hostel@portal.test': { 
+                id: 5, 
+                full_name: 'Hostel Officer', 
+                email: 'hostel@portal.test', 
+                role: 'hostel',
+                password: 'Password123'
+            },
+            'lecturer@portal.test': { 
+                id: 6, 
+                full_name: 'Lecturer User', 
+                email: 'lecturer@portal.test', 
+                role: 'lecturer',
+                password: 'Password123'
+            }
+        };
+
+        // ============================================================
+        // HELPER FUNCTIONS
+        // ============================================================
+        function getDashboardUrl(role) {
+            const dashboards = {
+                'admin': 'dashboard_admin.html',
+                'student': 'dashboard_student.html',
+                'lecturer': 'dashboard_officer.html',
+                'librarian': 'dashboard_officer.html',
+                'finance': 'dashboard_officer.html',
+                'hostel': 'dashboard_officer.html'
+            };
+            return dashboards[role] || 'dashboard_student.html';
+        }
+
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alert-box');
+            alertBox.className = `alert alert-${type}`;
+            alertBox.textContent = message;
+            alertBox.style.display = 'block';
+        }
+
+        function hideAlert() {
+            const alertBox = document.getElementById('alert-box');
+            alertBox.style.display = 'none';
+        }
+
+        function fillLogin(email, password) {
+            document.getElementById('email').value = email;
+            document.getElementById('password').value = password;
+            hideAlert();
+            // Auto-login after a moment
+            setTimeout(handleLogin, 300);
+        }
+
+        // ============================================================
+        // MAIN LOGIN FUNCTION
+        // ============================================================
+        function handleLogin() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            // Validate
+            if (!email || !password) {
+                showAlert('Please enter both email and password.', 'error');
+                return;
+            }
+
+            // Find user
+            const user = MOCK_USERS[email];
+            
+            if (!user) {
+                showAlert('User not found. Please check your email.', 'error');
+                return;
+            }
+
+            if (user.password !== password) {
+                showAlert('Invalid password. Please try again.', 'error');
+                return;
+            }
+
+            // Save user session
+            const userData = {
+                id: user.id,
+                full_name: user.full_name,
+                email: user.email,
+                role: user.role
+            };
+            
+            try {
+                sessionStorage.setItem('user_data', JSON.stringify(userData));
+            } catch (e) {
+                console.warn('Could not save session:', e);
+            }
+
+            showAlert(`Welcome, ${user.full_name}! Redirecting...`, 'success');
+
+            // Redirect after delay
+            setTimeout(function() {
+                window.location.href = getDashboardUrl(user.role);
+            }, 600);
+        }
+
+        // ============================================================
+        // CHECK EXISTING SESSION ON PAGE LOAD
+        // ============================================================
+        (function() {
+            // If we have a logout parameter, clear session
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('logout')) {
+                sessionStorage.removeItem('user_data');
+                // Remove the parameter from URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                console.log('✅ Logged out successfully');
+                return;
+            }
+
+            // Check if user is already logged in
+            try {
+                const userData = sessionStorage.getItem('user_data');
+                if (userData) {
+                    const user = JSON.parse(userData);
+                    // Redirect to dashboard
+                    window.location.href = getDashboardUrl(user.role);
+                    return;
+                }
+            } catch (e) {
+                // Ignore
+            }
+
+            console.log('✅ Login page ready. Click a demo account to login.');
+        })();
+
+        // Handle Enter key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const email = document.getElementById('email');
+                const password = document.getElementById('password');
+                if (document.activeElement === email || document.activeElement === password) {
+                    e.preventDefault();
+                    handleLogin();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

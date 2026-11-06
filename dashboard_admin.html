@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; min-height: 100vh; }
+        .topbar { background: white; padding: 16px 24px; border-bottom: 1px solid #e2e8f0; }
+        .topbar-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .brand { text-decoration: none; font-weight: 700; font-size: 1.2rem; color: #1e293b; }
+        .brand span { margin-right: 8px; }
+        .btn { display: inline-block; padding: 8px 20px; background: #4f46e5; color: white; text-decoration: none; border-radius: 6px; border: none; cursor: pointer; font-size: 0.9rem; }
+        .btn-danger { background: #ef4444; }
+        .btn-sm { padding: 6px 14px; font-size: 0.85rem; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        .layout { display: flex; gap: 24px; }
+        .sidebar { background: white; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; width: 220px; min-height: 400px; }
+        .sidebar ul { list-style: none; padding: 0; margin: 0; }
+        .sidebar ul li { padding: 10px 12px; margin: 4px 0; border-radius: 6px; cursor: pointer; }
+        .sidebar ul li:hover { background: #f1f5f9; }
+        .sidebar ul li.active { background: #4f46e5; color: white; }
+        .sidebar ul li a { text-decoration: none; color: inherit; display: block; }
+        .main-content { flex: 1; }
+        .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .user-info { background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .stat .num { font-size: 2rem; font-weight: 700; color: #4f46e5; }
+        .stat .label { color: #64748b; font-size: 0.9rem; }
+        .text-muted { color: #64748b; }
+        .footer { text-align: center; padding: 24px; color: #94a3b8; border-top: 1px solid #e2e8f0; margin-top: 40px; }
+        .user-name { color: #4f46e5; font-weight: 600; margin-right: 16px; }
+        .nav { display: flex; gap: 12px; align-items: center; }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="topbar-inner">
+            <a href="index.html" class="brand"><span>🎓</span> School Clearance Portal</a>
+            <div class="nav">
+                <span class="user-name" data-user-display>👋 Admin</span>
+                <button class="btn btn-danger btn-sm" onclick="logoutUser()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="layout">
+            <div class="sidebar">
+                <ul>
+                    <li class="active"><a href="#">📊 Dashboard</a></li>
+                    <li><a href="#">👥 Users</a></li>
+                    <li><a href="#">🏫 Departments</a></li>
+                    <li><a href="#">📊 Reports</a></li>
+                    <li><a href="#">🔐 Audit</a></li>
+                    <li><a href="#">⚙️ Settings</a></li>
+                    <li><a href="#" onclick="logoutUser()">🚪 Logout</a></li>
+                </ul>
+            </div>
+
+            <div class="main-content">
+                <div class="user-info">
+                    <h3>👋 Welcome, <span data-user-name>Administrator</span></h3>
+                    <p style="margin-top: 8px; color: #64748b;">
+                        <strong>Email:</strong> <span data-user-email>—</span> &nbsp;|&nbsp; 
+                        <strong>Role:</strong> <span data-user-role>Admin</span>
+                    </p>
+                </div>
+
+                <div class="grid-4">
+                    <div class="card stat"><div class="num">12</div><div class="label">Total Accounts</div></div>
+                    <div class="card stat"><div class="num">45</div><div class="label">Applications</div></div>
+                    <div class="card stat"><div class="num">28</div><div class="label">Fully Cleared</div></div>
+                    <div class="card stat"><div class="num">17</div><div class="label">Pending Review</div></div>
+                </div>
+
+                <div class="card">
+                    <h2>Digital Clearance System Overview</h2>
+                    <p class="text-muted">Welcome to the School Clearance Portal Administration dashboard. Use the sidebar menu to manage users, departments, applications, and system settings.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">&copy; 2026 School Clearance Portal. All rights reserved.</div>
+
+    <script src="dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = initDashboard('admin');
+            if (user) {
+                console.log('✅ Admin dashboard ready for:', user.email);
+            }
+        });
+    </script>
+</body>
+</html>
